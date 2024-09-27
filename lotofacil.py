@@ -207,6 +207,44 @@ def main(page: ft.Page):
                 spacing=5,
                 ),
                 ft.Row(
+                    spacing=0,
+                    alignment=ft.alignment.center,
+                    height=100,
+                    controls=[
+                    ft.Container(
+                        ft.Text("Se houver dados na planilha, o sitema usará o último concurso capturado como "
+                                "referência e a busca será feita a partir desse concurso até o último publicado, "
+                                "se não houver dados na planilha o sistema abrirá um campo para que digite o número "
+                                "do concurso e usará o concurso digitado para fazer uma busca desse número até o "
+                                "o último públicado",
+                            color=ft.colors.PRIMARY,    
+                                ),
+                    bgcolor=ft.colors.SECONDARY_CONTAINER,
+                    alignment=ft.alignment.center,
+                    #width=150,
+                    expand=True,
+                    ),
+                ],
+                ),
+                ft.Row(
+                    spacing=0,
+                    alignment=ft.alignment.center,
+                    height=100,
+                    controls=[    
+                    ft.Container(    
+                        ft.Text('APÓS CAPTURADOS OS DADOS SERÃO SALVOS NA PLANILHA AUTOMATICAMENTE',
+                            color=ft.colors.SECONDARY_CONTAINER,
+                            text_align=ft.TextAlign.CENTER,    
+                                ),
+                        bgcolor=ft.colors.PRIMARY,
+                        alignment=ft.alignment.center,
+                        padding=5,
+                        height=60,
+                        expand=True,
+                ),
+                ],
+                ),
+                ft.Row(
                 [
                 ft.Container(
                     ft.ElevatedButton(
@@ -224,7 +262,42 @@ def main(page: ft.Page):
                 ],
                 spacing=5,
                 ),
-                ft.Column(
+                ],
+            ),
+        )
+        page.navigation_bar = ft.NavigationBar(
+            on_change=data_base,
+            destinations=[
+                ft.NavigationBarDestination(
+                    icon=ft.icons.FILE_COPY_OUTLINED, 
+                    selected_icon=ft.icons.FILE_COPY_ROUNDED,
+                    label="Arquivo(Carregar/Criar)"
+                    ),
+                ft.NavigationBarDestination(
+                    icon=ft.icons.BALLOT_OUTLINED, 
+                    selected_icon=ft.icons.BALLOT_ROUNDED,
+                    label="Base de dados"
+                    ),
+                ft.NavigationBarDestination(
+                    icon=ft.icons.TABLE_CHART_OUTLINED,
+                    selected_icon=ft.icons.TABLE_CHART,
+                    label="BI",
+                    ),
+                ft.NavigationBarDestination(
+                    icon=ft.icons.DATA_EXPLORATION_OUTLINED,
+                    selected_icon=ft.icons.DATA_EXPLORATION,
+                    label="Insights",
+                ),
+            ]
+        )
+        page.update()
+
+    def loto_scrap(e):
+
+        global df
+        df = pd.read_excel(save_sheet)
+
+        ft.Column(
                 scroll=ft.ScrollMode.AUTO,
                 controls=[
                     ft.Row(
@@ -312,278 +385,445 @@ def main(page: ft.Page):
                     ),
                 ],
             ),
-                ],
-            ),
-        )
-        page.navigation_bar = ft.NavigationBar(
-            on_change=data_base,
-            destinations=[
-                ft.NavigationBarDestination(
-                    icon=ft.icons.FILE_COPY_OUTLINED, 
-                    selected_icon=ft.icons.FILE_COPY_ROUNDED,
-                    label="Arquivo(Carregar/Criar)"
-                    ),
-                ft.NavigationBarDestination(
-                    icon=ft.icons.BALLOT_OUTLINED, 
-                    selected_icon=ft.icons.BALLOT_ROUNDED,
-                    label="Base de dados"
-                    ),
-                ft.NavigationBarDestination(
-                    icon=ft.icons.TABLE_CHART_OUTLINED,
-                    selected_icon=ft.icons.TABLE_CHART,
-                    label="BI",
-                    ),
-                ft.NavigationBarDestination(
-                    icon=ft.icons.DATA_EXPLORATION_OUTLINED,
-                    selected_icon=ft.icons.DATA_EXPLORATION,
-                    label="Insights",
-                ),
-            ]
-        )
-        page.update()
 
-    def loto_scrap(e):
+        #USAR CONCURSO 3118
 
-        global df
-        df = pd.read_excel(save_sheet)
+        def concurso_get(e):
 
-        #A classe Service é utilizada para criar uma instância do Chrome WebDriver 
-        service = Service()
+            df = pd.read_excel(save_sheet)
 
-        #webdriver.ChromeOptions é utilizado para definir a preferência para o browser do Chrome
-        options = webdriver.ChromeOptions()
-        #options.add_argument("--headless=new")
+            #A classe Service é utilizada para criar uma instância do Chrome WebDriver 
+            service = Service()
 
-        #Inicia-se a instância do Chrome WebDrive com as classes definidas, service e options 
-        driver = webdriver.Chrome(service = service, options = options)
+            #webdriver.ChromeOptions é utilizado para definir a preferência para o browser do Chrome
+            options = webdriver.ChromeOptions()
+            #options.add_argument("--headless=new")
 
-        #URL de onde vamos pegar os dados
-        url = 'https://loterias.caixa.gov.br/Paginas/Lotofacil.aspx'
-        #headers = {"User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"}
+            #Inicia-se a instância do Chrome WebDrive com as classes definidas, service e options 
+            driver = webdriver.Chrome(service = service, options = options)
 
-        #Acessando a URL
-        driver.get(url)
-        time.sleep(2)
+            #URL de onde vamos pegar os dados
+            url = 'https://loterias.caixa.gov.br/Paginas/Lotofacil.aspx'
+            #headers = {"User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"}
 
-        #como encontrar elementos do HTML
-        #find_element(By.ID, "id")
-        #find_element(By.NAME, "name")
-        #find_element(By.XPATH, "xpath")
-        #find_element(By.LINK_TEXT, "link text")
-        #find_element(By.PARTIAL_LINK_TEXT, "partial link text")
-        #find_element(By.TAG_NAME, "tag name")
-        #find_element(By.CLASS_NAME, "class name")
-        #find_element(By.CSS_SELECTOR, "css selector")
+            #Acessando a URL
+            driver.get(url)
+            time.sleep(2)
 
-        #buscar textos no HTML
-        #td.get_attribute('innerHTML')
-        #td.get_attribute('innerText')
-        #td.get_attribute('textContent')
+            #como encontrar elementos do HTML
+            #find_element(By.ID, "id")
+            #find_element(By.NAME, "name")
+            #find_element(By.XPATH, "xpath")
+            #find_element(By.LINK_TEXT, "link text")
+            #find_element(By.PARTIAL_LINK_TEXT, "partial link text")
+            #find_element(By.TAG_NAME, "tag name")
+            #find_element(By.CLASS_NAME, "class name")
+            #find_element(By.CSS_SELECTOR, "css selector")
 
-
-        #Captura dos dados
-
-        #Capturando a data
-        lotofacil_data = driver.find_elements(By.XPATH, "//*[@id='wp_resultados']/div[1]/div/h2/span")[0].text
-        #separando a string que contém concurso e data
-        Concurso,Data = lotofacil_data.split('(', 1)
-        Concurso = Concurso.replace('Concurso ', '')
-        #removendo o parenteses da data
-        #Data = Data.replace(')', '')
-        #Data = datetime.datetime.strptime(Data, '%d/%m/%Y')
-        ultimo_concurso_salvo = str(df['Concurso'].iloc[-1])
-        ultimo_concurso_salvo = ultimo_concurso_salvo.replace('Concurso ', '')
-
-        #ultima_data_exc = df['Data'].iloc[-1]
-        #ultima_data_exc_tratada = datetime.datetime.strptime(ultima_data_exc, '%d/%m/%Y')
-        #data_atual = format(datetime.datetime.now(), '%d/%m/%Y')
-        #data_atual_tratada = datetime.datetime.strptime(data_atual, '%d/%m/%Y')
-        #data_atual_tratada = data_atual_tratada - datetime.timedelta(days=1)
-        #diferenca = data_atual_tratada - ultima_data_exc_tratada
-        #difference_list = []
-
-        old_concurso = driver.find_element(By.XPATH, "//*[@id='buscaConcurso']").click()
-
-        print(Concurso)
-        print(ultimo_concurso_salvo)
-
-        #Se o último concurso salvo na planilha não for igual ao atual no site o sistema voltará e capturará todos os ainda não
-        #capturados até o mais atual
-        for i in range(int(ultimo_concurso_salvo)+1,int(Concurso)+1):
+            #buscar textos no HTML
+            #td.get_attribute('innerHTML')
+            #td.get_attribute('innerText')
+            #td.get_attribute('textContent')
             
-            driver.find_element(By.XPATH, "//*[@id='buscaConcurso']").click
-            time.sleep(2)
-            driver.find_element(By.XPATH, "//*[@id='buscaConcurso']").send_keys(i)
-            time.sleep(2)
-            pyautogui.press('ENTER') 
-            time.sleep(2)
-            pyautogui.press('backspace')
-            pyautogui.press('backspace')
-            pyautogui.press('backspace')
-            pyautogui.press('backspace')
-            time.sleep(2)
+            #Captura dos dados
+
             #Capturando a data
             lotofacil_data = driver.find_elements(By.XPATH, "//*[@id='wp_resultados']/div[1]/div/h2/span")[0].text
-            #Capturando os números sorteados
-            lotofacil_numbers = driver.find_elements(By.CSS_SELECTOR, ".ng-binding.dezena.ng-scope")[0:15]
-            #Capturando o texto dos números para cada número na lista
-            all_lotofacil_numbers = [number.get_attribute('innerText') for number in lotofacil_numbers]
-            #Capturando os ganhadores
-            lotofacil_ganhadores = driver.find_elements(By.CSS_SELECTOR, ".description.ng-binding.ng-scope")[0:5]
-            #Capturando o texto dos números para cada ganhador na lista
-            all_lotofacil_winners = [winner.get_attribute('innerText') for winner in lotofacil_ganhadores]
-            #Capturando a arrecadação total
-            lotofacil_dados_extras = driver.find_elements(By.XPATH, "//div[contains(@class, 'related-box gray-text no-margin')]/p")[6:27]
-            #Capturando o texto da arrecadação
-            lotofacil_dados_extras_text = [arrecadacao_details.get_attribute('innerText') for arrecadacao_details in lotofacil_dados_extras]
-
-
-            #Tratamento dos dados
             #separando a string que contém concurso e data
             Concurso,Data = lotofacil_data.split('(', 1)
-            #tirando ')' da data
-            Data = Data.replace(')','')
-            #Transformando o array de números sorteados em string separados por '-'
-            loteria_numbers_to_string = ' - '.join(str(x) for x in all_lotofacil_numbers)
-            #Transformando o array de ganhadores em string separados por '-'
-            loteria_winners_to_string = ' - '.join(str(x) for x in all_lotofacil_winners)
-            #Transformando o array que traz a arrecadação e dados extras em string separada por ' '
-            lotofacil_dados_extras_text_tratado = ''.join(str(x) for x in lotofacil_dados_extras_text)
-            #remove os textos a mais deixando apenas o valor da arrecadação e separa dos dados extras
-            detalhamento,arrecadacao = lotofacil_dados_extras_text_tratado.split('R$', 1)
-            arrecadacao = arrecadacao.replace(' Veja o detalhamento', '')
-            #Saber se houve ganhador ou acumulou
-            if 'Não houve acertador' in loteria_winners_to_string: 
-                loteria_acumulou = 'Acumulou!'
-            else:
-                loteria_acumulou = 'Houve Ganhador'
-
-            #Transformando todos os dados coletados em um array
-            List_data_for_export = [Data,Concurso,loteria_numbers_to_string,loteria_winners_to_string,detalhamento,arrecadacao,loteria_acumulou]
-
-            #print(ultima_data_exc_tratada)
-            #print(data_atual_tratada)
-            #print(diferenca)
-            #print(Data)
-            #print(Concurso)
-            #print(loteria_numbers_to_string)
-            #print(loteria_winners_to_string)
-            #print(detalhamento)
-            #print(arrecadacao)
-            #print(loteria_acumulou)
-
-            #print(List_data_for_export)
+            Concurso = Concurso.replace('Concurso ', '')
+            #removendo o parenteses da data
+            #Data = Data.replace(')', '')
+            #Data = datetime.datetime.strptime(Data, '%d/%m/%Y')
             
-            global list_data_for_export_total
-            list_total = []
-            list_data_for_export_total = list_total.append(List_data_for_export)
+            ultimo_concurso_salvo = str(input_c.value)
+            #ultimo_concurso_salvo = ultimo_concurso_salvo.replace('Concurso ', '')
 
-            print(list_data_for_export_total)
+            #ultima_data_exc = df['Data'].iloc[-1]
+            #ultima_data_exc_tratada = datetime.datetime.strptime(ultima_data_exc, '%d/%m/%Y')
+            #data_atual = format(datetime.datetime.now(), '%d/%m/%Y')
+            #data_atual_tratada = datetime.datetime.strptime(data_atual, '%d/%m/%Y')
+            #data_atual_tratada = data_atual_tratada - datetime.timedelta(days=1)
+            #diferenca = data_atual_tratada - ultima_data_exc_tratada
+            #difference_list = []
 
-            page.add(
-                ft.Column(
-                scroll=ft.ScrollMode.ALWAYS,
-                controls=[
-                    ft.Row(
-                        spacing=0,
-                        alignment=ft.alignment.center,
-                        height=350,
-                        controls=[
-                        ft.Container(
-                            ft.Text(List_data_for_export[0],
-                                color=ft.colors.PRIMARY,    
-                                    ),
-                            bgcolor=ft.colors.SECONDARY_CONTAINER,
+            old_concurso = driver.find_element(By.XPATH, "//*[@id='buscaConcurso']").click()
+
+            print(Concurso)
+            print(ultimo_concurso_salvo)
+
+            #Se o último concurso salvo na planilha não for igual ao atual no site o sistema voltará e capturará todos os ainda não
+            #capturados até o mais atual
+            for i in range(int(ultimo_concurso_salvo)+1,int(Concurso)+1):
+                
+                driver.find_element(By.XPATH, "//*[@id='buscaConcurso']").click
+                time.sleep(2)
+                driver.find_element(By.XPATH, "//*[@id='buscaConcurso']").send_keys(i)
+                time.sleep(2)
+                pyautogui.press('ENTER') 
+                time.sleep(2)
+                pyautogui.press('backspace')
+                pyautogui.press('backspace')
+                pyautogui.press('backspace')
+                pyautogui.press('backspace')
+                time.sleep(2)
+                #Capturando a data
+                lotofacil_data = driver.find_elements(By.XPATH, "//*[@id='wp_resultados']/div[1]/div/h2/span")[0].text
+                #Capturando os números sorteados
+                lotofacil_numbers = driver.find_elements(By.CSS_SELECTOR, ".ng-binding.dezena.ng-scope")[0:15]
+                #Capturando o texto dos números para cada número na lista
+                all_lotofacil_numbers = [number.get_attribute('innerText') for number in lotofacil_numbers]
+                #Capturando os ganhadores
+                lotofacil_ganhadores = driver.find_elements(By.CSS_SELECTOR, ".description.ng-binding.ng-scope")[0:5]
+                #Capturando o texto dos números para cada ganhador na lista
+                all_lotofacil_winners = [winner.get_attribute('innerText') for winner in lotofacil_ganhadores]
+                #Capturando a arrecadação total
+                lotofacil_dados_extras = driver.find_elements(By.XPATH, "//div[contains(@class, 'related-box gray-text no-margin')]/p")[6:27]
+                #Capturando o texto da arrecadação
+                lotofacil_dados_extras_text = [arrecadacao_details.get_attribute('innerText') for arrecadacao_details in lotofacil_dados_extras]
+
+
+                #Tratamento dos dados
+                #separando a string que contém concurso e data
+                Concurso,Data = lotofacil_data.split('(', 1)
+                #tirando ')' da data
+                Data = Data.replace(')','')
+                #Transformando o array de números sorteados em string separados por '-'
+                loteria_numbers_to_string = ' - '.join(str(x) for x in all_lotofacil_numbers)
+                #Transformando o array de ganhadores em string separados por '-'
+                loteria_winners_to_string = ' - '.join(str(x) for x in all_lotofacil_winners)
+                #Transformando o array que traz a arrecadação e dados extras em string separada por ' '
+                lotofacil_dados_extras_text_tratado = ''.join(str(x) for x in lotofacil_dados_extras_text)
+                #remove os textos a mais deixando apenas o valor da arrecadação e separa dos dados extras
+                detalhamento,arrecadacao = lotofacil_dados_extras_text_tratado.split('R$', 1)
+                arrecadacao = arrecadacao.replace(' Veja o detalhamento', '')
+                #Saber se houve ganhador ou acumulou
+                if 'Não houve acertador' in loteria_winners_to_string: 
+                    loteria_acumulou = 'Acumulou!'
+                else:
+                    loteria_acumulou = 'Houve Ganhador'
+
+                #Transformando todos os dados coletados em um array
+                List_data_for_export = [Data,Concurso,loteria_numbers_to_string,loteria_winners_to_string,detalhamento,arrecadacao,loteria_acumulou]
+
+                #print(ultima_data_exc_tratada)
+                #print(data_atual_tratada)
+                #print(diferenca)
+                #print(Data)
+                #print(Concurso)
+                #print(loteria_numbers_to_string)
+                #print(loteria_winners_to_string)
+                #print(detalhamento)
+                #print(arrecadacao)
+                #print(loteria_acumulou)
+                #print(List_data_for_export)
+
+                page.add(
+                    ft.Column(
+                    scroll=ft.ScrollMode.ALWAYS,
+                    controls=[
+                        ft.Row(
+                            spacing=0,
                             alignment=ft.alignment.center,
-                            width=150,
-                            #expand=True,
-                        ),
-                        ft.VerticalDivider(width=3, thickness=3, color="white"),
-                        ft.Container(
-                            ft.Text(List_data_for_export[1],
-                                color=ft.colors.PRIMARY,    
-                                    ),
-                            bgcolor=ft.colors.PRIMARY_CONTAINER,
-                            alignment=ft.alignment.center,
-                            width=150,
-                            #expand=True,
-                        ),
-                        ft.VerticalDivider(width=3, thickness=3, color="white"),
-                        ft.Container(
-                            ft.Text(List_data_for_export[2],
-                                color=ft.colors.PRIMARY,    
-                                    ),
-                            bgcolor=ft.colors.PRIMARY_CONTAINER,
-                            alignment=ft.alignment.center,
-                            width=150,
-                            #expand=True,
-                        ),
-                        ft.VerticalDivider(width=3, thickness=3, color="white"),
-                        ft.Container(
-                            ft.Text(List_data_for_export[3],
-                                color=ft.colors.PRIMARY,    
-                                    ),
-                            bgcolor=ft.colors.SECONDARY_CONTAINER,
-                            alignment=ft.alignment.center,
-                            width=150,
-                            expand=True,
-                        ),
-                        ft.VerticalDivider(width=3, thickness=3, color="white"),
-                        ft.Container(
-                            ft.Text(List_data_for_export[4],
-                                color=ft.colors.PRIMARY,    
-                                    ),
-                            bgcolor=ft.colors.SECONDARY_CONTAINER,
-                            alignment=ft.alignment.center,
-                            width=150,
-                            expand=True,
-                        ),
-                        ft.VerticalDivider(width=3, thickness=3, color="white"),
-                        ft.Container(
-                            ft.Text(List_data_for_export[5],
-                                color=ft.colors.PRIMARY,    
-                                    ),
-                            bgcolor=ft.colors.PRIMARY_CONTAINER,
-                            alignment=ft.alignment.center,
-                            width=150,
-                            #expand=True,
-                        ),
-                        ft.VerticalDivider(width=3, thickness=3, color="white"),
-                        ft.Container(
-                            ft.Text(List_data_for_export[6],
-                                color=ft.colors.PRIMARY,    
-                                    ),
-                            bgcolor=ft.colors.PRIMARY_CONTAINER,
-                            alignment=ft.alignment.center,
-                            width=150,
-                            #expand=True,
-                        ),
-                    ],
+                            height=350,
+                            controls=[
+                            ft.Container(
+                                ft.Text(List_data_for_export[0],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.SECONDARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                #expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[1],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.PRIMARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                #expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[2],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.PRIMARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                #expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[3],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.SECONDARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[4],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.SECONDARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[5],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.PRIMARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                #expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[6],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.PRIMARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                #expand=True,
+                            ),
+                        ],
+                    ),
+                ],
                 ),
-            ],
-            ),
-        )
-            df = pd.concat([df, pd.DataFrame([List_data_for_export], columns=list(['Data', 'Concurso', 'Numeros Sorteados', 'Ganhadores', 'Apostas ganhadoras', 'Arrecadação', 'Acumulou?']))], ignore_index=True)
-            df.to_excel(save_sheet, index=False)
+                )
+                df = pd.concat([df, pd.DataFrame([List_data_for_export], columns=list(['Data', 'Concurso', 'Numeros Sorteados', 'Ganhadores', 'Apostas ganhadoras', 'Arrecadação', 'Acumulou?']))], ignore_index=True)
+                df.to_excel(save_sheet, index=False)
+
+        if df['Concurso'].isna().all():
+            concurso_input = ft.Text()
+            input_c = ft.TextField(label="Concurso", hint_text="Por favor digite o número do concurso")
+            get_concurso_data = ft.ElevatedButton(text="Confirmar", on_click=concurso_get)
+            page.add(input_c, get_concurso_data, concurso_input)
+
+        else:    
+            ultimo_concurso_salvo = str(df['Concurso'].iloc[-1])   
+
+            #A classe Service é utilizada para criar uma instância do Chrome WebDriver 
+            service = Service()
+
+            #webdriver.ChromeOptions é utilizado para definir a preferência para o browser do Chrome
+            options = webdriver.ChromeOptions()
+            #options.add_argument("--headless=new")
+
+            #Inicia-se a instância do Chrome WebDrive com as classes definidas, service e options 
+            driver = webdriver.Chrome(service = service, options = options)
+
+            #URL de onde vamos pegar os dados
+            url = 'https://loterias.caixa.gov.br/Paginas/Lotofacil.aspx'
+            #headers = {"User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"}
+
+            #Acessando a URL
+            driver.get(url)
+            time.sleep(2)
+
+            #como encontrar elementos do HTML
+            #find_element(By.ID, "id")
+            #find_element(By.NAME, "name")
+            #find_element(By.XPATH, "xpath")
+            #find_element(By.LINK_TEXT, "link text")
+            #find_element(By.PARTIAL_LINK_TEXT, "partial link text")
+            #find_element(By.TAG_NAME, "tag name")
+            #find_element(By.CLASS_NAME, "class name")
+            #find_element(By.CSS_SELECTOR, "css selector")
+
+            #buscar textos no HTML
+            #td.get_attribute('innerHTML')
+            #td.get_attribute('innerText')
+            #td.get_attribute('textContent')
             
-        page.add(
-        ft.Row(
-        [
-        ft.Container(    
-                ft.Text('DADOS CAPTURADOS SALVOS NA PLANILHA COM SUCESSO!',
-                    color=ft.colors.SECONDARY_CONTAINER,
-                    text_align=ft.TextAlign.CENTER,    
-                        ),
-                bgcolor=ft.colors.PRIMARY,
-                alignment=ft.alignment.center,
-                padding=5,
-                height=60,
-                expand=True,
-        ),
-        ],
-        spacing=10,
-        ),
-        )          
+            #Captura dos dados
+
+            #Capturando a data
+            lotofacil_data = driver.find_elements(By.XPATH, "//*[@id='wp_resultados']/div[1]/div/h2/span")[0].text
+            #separando a string que contém concurso e data
+            Concurso,Data = lotofacil_data.split('(', 1)
+            Concurso = Concurso.replace('Concurso ', '')
+            #removendo o parenteses da data
+            #Data = Data.replace(')', '')
+            #Data = datetime.datetime.strptime(Data, '%d/%m/%Y')
+            
+            #ultimo_concurso_salvo = str(df['Concurso'].iloc[-1])
+            ultimo_concurso_salvo = ultimo_concurso_salvo.replace('Concurso ', '')
+
+            #ultima_data_exc = df['Data'].iloc[-1]
+            #ultima_data_exc_tratada = datetime.datetime.strptime(ultima_data_exc, '%d/%m/%Y')
+            #data_atual = format(datetime.datetime.now(), '%d/%m/%Y')
+            #data_atual_tratada = datetime.datetime.strptime(data_atual, '%d/%m/%Y')
+            #data_atual_tratada = data_atual_tratada - datetime.timedelta(days=1)
+            #diferenca = data_atual_tratada - ultima_data_exc_tratada
+            #difference_list = []
+
+            old_concurso = driver.find_element(By.XPATH, "//*[@id='buscaConcurso']").click()
+
+            print(Concurso)
+            print(ultimo_concurso_salvo)
+
+            #Se o último concurso salvo na planilha não for igual ao atual no site o sistema voltará e capturará todos os ainda não
+            #capturados até o mais atual
+            for i in range(int(ultimo_concurso_salvo)+1,int(Concurso)+1):
+                
+                driver.find_element(By.XPATH, "//*[@id='buscaConcurso']").click
+                time.sleep(2)
+                driver.find_element(By.XPATH, "//*[@id='buscaConcurso']").send_keys(i)
+                time.sleep(2)
+                pyautogui.press('ENTER') 
+                time.sleep(2)
+                pyautogui.press('backspace')
+                pyautogui.press('backspace')
+                pyautogui.press('backspace')
+                pyautogui.press('backspace')
+                time.sleep(2)
+                #Capturando a data
+                lotofacil_data = driver.find_elements(By.XPATH, "//*[@id='wp_resultados']/div[1]/div/h2/span")[0].text
+                #Capturando os números sorteados
+                lotofacil_numbers = driver.find_elements(By.CSS_SELECTOR, ".ng-binding.dezena.ng-scope")[0:15]
+                #Capturando o texto dos números para cada número na lista
+                all_lotofacil_numbers = [number.get_attribute('innerText') for number in lotofacil_numbers]
+                #Capturando os ganhadores
+                lotofacil_ganhadores = driver.find_elements(By.CSS_SELECTOR, ".description.ng-binding.ng-scope")[0:5]
+                #Capturando o texto dos números para cada ganhador na lista
+                all_lotofacil_winners = [winner.get_attribute('innerText') for winner in lotofacil_ganhadores]
+                #Capturando a arrecadação total
+                lotofacil_dados_extras = driver.find_elements(By.XPATH, "//div[contains(@class, 'related-box gray-text no-margin')]/p")[6:27]
+                #Capturando o texto da arrecadação
+                lotofacil_dados_extras_text = [arrecadacao_details.get_attribute('innerText') for arrecadacao_details in lotofacil_dados_extras]
+
+
+                #Tratamento dos dados
+                #separando a string que contém concurso e data
+                Concurso,Data = lotofacil_data.split('(', 1)
+                #tirando ')' da data
+                Data = Data.replace(')','')
+                #Transformando o array de números sorteados em string separados por '-'
+                loteria_numbers_to_string = ' - '.join(str(x) for x in all_lotofacil_numbers)
+                #Transformando o array de ganhadores em string separados por '-'
+                loteria_winners_to_string = ' - '.join(str(x) for x in all_lotofacil_winners)
+                #Transformando o array que traz a arrecadação e dados extras em string separada por ' '
+                lotofacil_dados_extras_text_tratado = ''.join(str(x) for x in lotofacil_dados_extras_text)
+                #remove os textos a mais deixando apenas o valor da arrecadação e separa dos dados extras
+                detalhamento,arrecadacao = lotofacil_dados_extras_text_tratado.split('R$', 1)
+                arrecadacao = arrecadacao.replace(' Veja o detalhamento', '')
+                #Saber se houve ganhador ou acumulou
+                if 'Não houve acertador' in loteria_winners_to_string: 
+                    loteria_acumulou = 'Acumulou!'
+                else:
+                    loteria_acumulou = 'Houve Ganhador'
+
+                #Transformando todos os dados coletados em um array
+                List_data_for_export = [Data,Concurso,loteria_numbers_to_string,loteria_winners_to_string,detalhamento,arrecadacao,loteria_acumulou]
+
+                #print(ultima_data_exc_tratada)
+                #print(data_atual_tratada)
+                #print(diferenca)
+                #print(Data)
+                #print(Concurso)
+                #print(loteria_numbers_to_string)
+                #print(loteria_winners_to_string)
+                #print(detalhamento)
+                #print(arrecadacao)
+                #print(loteria_acumulou)
+                #print(List_data_for_export)
+
+                page.add(
+                    ft.Column(
+                    scroll=ft.ScrollMode.ALWAYS,
+                    controls=[
+                        ft.Row(
+                            spacing=0,
+                            alignment=ft.alignment.center,
+                            height=350,
+                            controls=[
+                            ft.Container(
+                                ft.Text(List_data_for_export[0],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.SECONDARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                #expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[1],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.PRIMARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                #expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[2],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.PRIMARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                #expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[3],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.SECONDARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[4],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.SECONDARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[5],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.PRIMARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                #expand=True,
+                            ),
+                            ft.VerticalDivider(width=3, thickness=3, color="white"),
+                            ft.Container(
+                                ft.Text(List_data_for_export[6],
+                                    color=ft.colors.PRIMARY,    
+                                        ),
+                                bgcolor=ft.colors.PRIMARY_CONTAINER,
+                                alignment=ft.alignment.center,
+                                width=150,
+                                #expand=True,
+                            ),
+                        ],
+                    ),
+                ],
+                ),
+                )
+                df = pd.concat([df, pd.DataFrame([List_data_for_export], columns=list(['Data', 'Concurso', 'Numeros Sorteados', 'Ganhadores', 'Apostas ganhadoras', 'Arrecadação', 'Acumulou?']))], ignore_index=True)
+                df.to_excel(save_sheet, index=False)    
 
     def call_save_sheet(e):
         page.controls.clear()
@@ -704,23 +944,158 @@ def main(page: ft.Page):
 
             all_data_table = df_table.to_dict(orient="records")
 
-            datatable = DataTable(
-                border_radius=10,
-                border=ft.border.all(2, ft.colors.PRIMARY),
-                data_row_max_height=float("inf"),
-                heading_row_color=ft.colors.SECONDARY_CONTAINER, 
-                columns=[
-                    DataColumn(Text("Data",color=ft.colors.PRIMARY,)),
-                    DataColumn(Text("Concurso",color=ft.colors.PRIMARY,)),
-                    DataColumn(Text("Numeros Sorteados",color=ft.colors.PRIMARY,)),
-                    DataColumn(Text("Ganhadores",color=ft.colors.PRIMARY,)),
-                    DataColumn(Text("Apostas ganhadoras",color=ft.colors.PRIMARY,)),
-                    DataColumn(Text("Arrecadação",color=ft.colors.PRIMARY,)),
-                    DataColumn(Text("Acumulou?",color=ft.colors.PRIMARY,)),
-                ],
-                rows=[],
-            )
+            def get_concurso(e):
+                datatable.rows.clear()
+                global conc_filtered
+                conc_filtered = "Concurso " + search_filter.value
+                print(conc_filtered)
 
+                list_to_show = [i for i in all_data_table if conc_filtered in i['Concurso']]
+
+                for i in list_to_show:
+                    datatable.rows.append(
+                        DataRow(
+                            cells=[
+                                DataCell(Text(i['Data'])),
+                                DataCell(Text(i['Concurso'])),
+                                DataCell(Text(i['Numeros Sorteados'])),
+                                DataCell(Text(i['Ganhadores'])),
+                                DataCell(Text(i['Apostas ganhadoras'])),
+                                DataCell(Text(i['Arrecadação'])),
+                                DataCell(Text(i['Acumulou?'])),
+                            ],
+                        ),
+                    )
+                page.update(datatable)
+
+            ultimas_datas = df['Data']
+            ultimas_datas = ultimas_datas.to_string(index=False)
+            ultimas_datas = ultimas_datas.split('\n')
+            df_ult_ano = []
+
+            #print(ultimas_datas)
+
+            for i in ultimas_datas:
+                df_ult_ano.append(i[6:10])
+            df_ult_ano = list(set(df_ult_ano))     
+            print(df_ult_ano)    
+
+            def dropdown_changed_year(e):
+                global drop_selected_year
+                drop_selected_year = drop_data_year.value
+                print(drop_selected_year)
+
+                df_ult_mes = []
+
+                for i in ultimas_datas:
+                    if i[6:10] == drop_selected_year:
+                        df_ult_mes.append(i[3:5])
+                        df_ult_mes = list(set(df_ult_mes))     
+                print(df_ult_mes)
+
+                drop_data.options.clear()
+                for i in df_ult_mes:
+                    drop_data.options.append(
+                    ft.dropdown.Option(i),
+                )
+                page.update()
+
+            def dropdown_changed_month(e):
+                datatable.rows.clear()
+                #t.value = f"Dropdown value is:  {drop_data.value}"
+
+                drop_selected = drop_data.value
+                print(drop_data.value)
+
+                df_tb_conc_values = df[['Data']]
+                df_tb_conc_values = df_tb_conc_values.to_string(index=False, header=None)
+                #df_dt_arrecada_values = df_dt_arrecada_values.replace('\n','  ').split('  ')
+                df_tb_conc_values = df_tb_conc_values.split('\n')
+                #print(df_dt_arrecada_values)
+                df_data_filtered = []
+                for i in df_tb_conc_values:
+                    if i[3:5] == drop_selected and i[6:10] == drop_selected_year:
+                        df_data_filtered.append(i[:10])
+
+                print(df_data_filtered)  
+
+                for i in all_data_table:
+                    for x in df_data_filtered:
+                        if i['Data'] == x:
+                            datatable.rows.append(
+                                DataRow(
+                                    cells=[
+                                        DataCell(Text(i['Data'])),
+                                        DataCell(Text(i['Concurso'])),
+                                        DataCell(Text(i['Numeros Sorteados'])),
+                                        DataCell(Text(i['Ganhadores'])),
+                                        DataCell(Text(i['Apostas ganhadoras'])),
+                                        DataCell(Text(i['Arrecadação'])),
+                                        DataCell(Text(i['Acumulou?'])),
+                                    ],
+                                ),
+                            )
+                    page.update(datatable)  
+
+            drop_data = ft.Dropdown(
+                label="Mês",
+                #width=200,
+                on_change=dropdown_changed_month,
+                options=[],
+                expand=True
+            )
+            
+
+            drop_data_year = ft.Dropdown(
+                label="Ano",
+                #width=200,
+                on_change=dropdown_changed_year,
+                options=[],
+                expand=True
+            )
+            
+
+            for i in df_ult_ano:
+                drop_data_year.options.append(
+                    ft.dropdown.Option(i),
+                )
+            page.update()     
+
+            search_filter = ft.CupertinoTextField(
+                placeholder_text="Digite apenas o número do concurso",
+                input_filter=ft.InputFilter(allow=True, regex_string=r"^[0-9]*$", replacement_string=""),
+                height=60,
+                expand=True
+            )
+            page.add(
+                Column([
+                    Text("Base de Resultados Capturados", size=30, weight="bold"),
+                    ft.Row([drop_data_year, drop_data]),
+                    ft.Row([search_filter,
+                    ft.ElevatedButton(text="Filtrar", on_click=get_concurso)
+                    ])
+                ])
+            )  
+
+            global datatable
+
+            datatable = DataTable(
+            border_radius=10,
+            border=ft.border.all(2, ft.colors.PRIMARY),
+            data_row_max_height=float("inf"),
+            heading_row_color=ft.colors.SECONDARY_CONTAINER,
+            columns=[
+                DataColumn(Text("Data",color=ft.colors.PRIMARY,)),
+                DataColumn(Text("Concurso",color=ft.colors.PRIMARY,)),
+                DataColumn(Text("Numeros Sorteados",color=ft.colors.PRIMARY)),
+                DataColumn(Text("Ganhadores",color=ft.colors.PRIMARY,)),
+                DataColumn(Text("Apostas ganhadoras",color=ft.colors.PRIMARY,)),
+                DataColumn(Text("Arrecadação",color=ft.colors.PRIMARY,)),
+                DataColumn(Text("Acumulou?",color=ft.colors.PRIMARY,)),
+            ],
+            rows=[],
+            )
+        
             for i in all_data_table:
                 datatable.rows.append(
                     DataRow(
@@ -732,17 +1107,11 @@ def main(page: ft.Page):
                             DataCell(Text(i['Apostas ganhadoras'])),
                             DataCell(Text(i['Arrecadação'])),
                             DataCell(Text(i['Acumulou?'])),
-                        ]
-                    )
-
+                        ],
+                    ),
                 )
+            page.add(datatable)
 
-            page.add(
-                Column([
-                    Text("Base de Resultados Capturados", size=30, weight="bold"),
-                    datatable
-                ])
-            )  
         if e.control.selected_index == 2:
             page.controls.clear()
             df = pd.read_excel(save_sheet)
@@ -765,13 +1134,19 @@ def main(page: ft.Page):
             #pegar última data Salva
             #ultima_data_salva = df['Data'].dt.strftime('%d/%m/%Y').iloc[-1]
 
-            ultimas_datas = df['Data'].dt.strftime('%d/%m/%Y')
+            #ultimas_datas = df['Data'].dt.strftime('%d/%m/%Y')
+            #ultimas_datas = ultimas_datas.to_string(index=False)
+            #ultimos_meses = ultimas_datas.replace(' 00:00:00', '')
+            #ultimos_meses = ultimos_meses.split('\n')
+
+            ultimas_datas = df['Data']
             ultimas_datas = ultimas_datas.to_string(index=False)
-            ultimos_meses = ultimas_datas.replace(' 00:00:00', '')
-            ultimos_meses = ultimos_meses.split('\n')
+            ultimas_datas = ultimas_datas.split('\n')
             df_ult_ano = []
 
-            for i in ultimos_meses:
+            #print(ultimas_datas)
+
+            for i in ultimas_datas:
                 df_ult_ano.append(i[6:10])
             df_ult_ano = list(set(df_ult_ano))     
             print(df_ult_ano)
@@ -787,7 +1162,7 @@ def main(page: ft.Page):
 
                 df_ult_mes = []
 
-                for i in ultimos_meses:
+                for i in ultimas_datas:
                     if i[6:10] == drop_selected_year:
                         df_ult_mes.append(i[3:5])
                         df_ult_mes = list(set(df_ult_mes))     
@@ -806,28 +1181,29 @@ def main(page: ft.Page):
                 #t.value = f"Dropdown value is:  {drop_data.value}"
 
                 drop_selected = drop_data.value
+                print(drop_data.value)
 
                 df_dt_arrecada_values = df[['Data', 'Arrecadação']]
                 df_dt_arrecada_values = df_dt_arrecada_values.to_string(index=False, header=None)
                 #df_dt_arrecada_values = df_dt_arrecada_values.replace('\n','  ').split('  ')
                 df_dt_arrecada_values = df_dt_arrecada_values.split('\n')
                 #print(df_dt_arrecada_values)
-                #print(df_dt_arrecada_values)
                 df_data_filtered = []
                 df_arrecada_values = []
                 for i in df_dt_arrecada_values:
-                    if i[5:7] == drop_selected and i[:4] == drop_selected_year:
+                    if i[3:5] == drop_selected and i[6:10] == drop_selected_year:
                         df_data_filtered.append(i[:10])
                         df_arrecada_values.append(i[12:26])
 
-                #print(df_dt_arrecada_values) 
+                print(df_arrecada_values) 
+                print(df_data_filtered)
 
-                df_data_filtered_format = []
-                for i in df_data_filtered:
-                    df_data_filtered_format.append(datetime.datetime.strptime(i, '%Y-%m-%d').strftime('%d/%m/%Y'))
+                #df_data_filtered_format = []
+                #for i in df_data_filtered:
+                #    df_data_filtered_format.append(datetime.datetime.strptime(i, '%Y-%m-%d').strftime('%d/%m/%Y'))
 
                 df_dt_day_label = []
-                for i in df_data_filtered_format:
+                for i in df_data_filtered:
                         df_dt_day_label.append(i[:2])       
 
                 #print(df_arrecada_values)
@@ -840,6 +1216,9 @@ def main(page: ft.Page):
                 df_arrecada_values_bar = df_arrecada_values_bar.split()
                 cash = "R$"
                 brazilian_cash = [cash + i for i in df_arrecada_values]
+
+                print(df_arrecada_values_bar)
+                print(brazilian_cash)
 
                 #valor arrecadado por data
                 df_cash_rep_bar_join = dict(zip(df_dt_day_label[::1], df_arrecada_values_bar[::1]))  
