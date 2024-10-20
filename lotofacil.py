@@ -876,7 +876,7 @@ def main(page: ft.Page):
 
         #df = df.set_axis(['Data', 'Concurso', 'Numeros Sorteados', 'Ganhadores', 'Detalhamento sobre apostas ganhadoras', 'Arrecadação', 'Acumulou ou houve ganhador?'], axis=1)
 
-        df.to_excel("Catalogo_Plataforma_Essenciz_IS8_tratado.xlsx", index=False)
+        df.to_excel("Sorteio_Lotofacil.xlsx", index=False)
 
     def sheet_values_datatable(e: FilePickerResultEvent):
         save_file_dir_datable = ft.Text()
@@ -1035,26 +1035,26 @@ def main(page: ft.Page):
                                     ],
                                 ),
                             )
-                    page.update(datatable)  
+                    page.update(datatable)               
 
             drop_data = ft.Dropdown(
                 label="Mês",
                 #width=200,
                 on_change=dropdown_changed_month,
                 options=[],
+                prefix_icon=ft.icons.CALENDAR_MONTH_OUTLINED,
                 expand=True
             )
-            
 
             drop_data_year = ft.Dropdown(
                 label="Ano",
                 #width=200,
                 on_change=dropdown_changed_year,
                 options=[],
+                prefix_icon=ft.icons.CALENDAR_MONTH_OUTLINED,
                 expand=True
             )
             
-
             for i in df_ult_ano:
                 drop_data_year.options.append(
                     ft.dropdown.Option(i),
@@ -1069,7 +1069,15 @@ def main(page: ft.Page):
             )
             page.add(
                 Column([
-                    Text("Base de Resultados Capturados", size=30, weight="bold"),
+                    ft.Container(    
+                        Text("Base de Resultados Capturados",
+                        color=ft.colors.SECONDARY_CONTAINER,
+                        text_align=ft.TextAlign.CENTER, size=30, weight="bold"),
+                        bgcolor=ft.colors.PRIMARY,
+                        alignment=ft.alignment.center,
+                        padding=5,
+                        height=60,
+                ),
                     ft.Row([drop_data_year, drop_data]),
                     ft.Row([search_filter,
                     ft.ElevatedButton(text="Filtrar", on_click=get_concurso)
@@ -1394,7 +1402,8 @@ def main(page: ft.Page):
                 label="Mês",
                 width=200,
                 on_change=dropdown_changed,
-                options=[]
+                options=[],
+                prefix_icon=ft.icons.CALENDAR_MONTH_OUTLINED
             )
             
 
@@ -1402,7 +1411,8 @@ def main(page: ft.Page):
                 label="Ano",
                 width=200,
                 on_change=dropdown_changed_year,
-                options=[]
+                options=[],
+                prefix_icon=ft.icons.CALENDAR_MONTH_OUTLINED
             )
             
 
@@ -1422,7 +1432,7 @@ def main(page: ft.Page):
                 ],
                 border=ft.border.all(1, ft.colors.PRIMARY_CONTAINER),
                 left_axis=ft.ChartAxis(
-                labels_size=40, title=ft.Text("Valores arrecadados"), title_size=40
+                labels_size=60, title=ft.Text("Valores arrecadados"), title_size=40
                 ),
                 bottom_axis=ft.ChartAxis(
                 title=ft.Text("Data"), title_size=40,
@@ -1431,13 +1441,13 @@ def main(page: ft.Page):
                         value=0, label=ft.Container()
                         ),
                     ],
-                labels_size=40,
+                labels_size=60,
                 ),
                 horizontal_grid_lines=ft.ChartGridLines(
                 color=ft.colors.PRIMARY_CONTAINER, width=1, dash_pattern=[1, 5]
                 ),
                 tooltip_bgcolor=ft.colors.with_opacity(0.8, ft.colors.BLACK),
-                max_y=50000000,
+                #max_y=50000000,
                 interactive=True,
                 #expand=True,
                 )
@@ -1456,13 +1466,13 @@ def main(page: ft.Page):
             df_num_rep = df_num_rep.to_string(index=False)
             df_num_rep = df_num_rep.replace('\n',' - ').split(' - ')
             df_num_rept = {i:df_num_rep.count(i) for i in df_num_rep}
-            print(df_num_rep)
-            print(df_num_rept)
-            print(df_num_rept.values())
+            #print(df_num_rep)
+            #print(df_num_rept)
+            #print(df_num_rept.values())
             maxVals = sorted(df_num_rept.values())[-10:]
-            print(maxVals)
+            #print(maxVals)
             maxVals2 = dict(Counter(df_num_rept).most_common(5))
-            print(maxVals2)
+            #print(maxVals2)
 
             #pegar dados da coluna - coluna de Apostas ganhadoras
             df_betwin_rep = df['Apostas ganhadoras']
@@ -1474,78 +1484,167 @@ def main(page: ft.Page):
             df_betwin_rep = df_betwin_rep.split(' - ')
             df_betwin_rep = [word for word in df_betwin_rep if len(word) <= 2]
             df_betwin_rept = dict(Counter(df_betwin_rep).most_common(5))
-            print(df_betwin_rep)
-            print(df_betwin_rept)
+            #print(df_betwin_rep)
+            #print(df_betwin_rept)
 
             #pegar dados da coluna - coluna de Ganhadores
             df_winners_rep = df['Ganhadores']
             df_winners_rep = df_winners_rep.to_string(index=False)
             df_winners_rep = df_winners_rep.replace('\\n', ' - ')
             df_winners_rep = df_winners_rep.replace('\n    ', ' - ')
+            df_winners_rep = df_winners_rep.replace('       15', '15')
             df_winners_rep = df_winners_rep.split(' - ')
             df_winners_rept = dict(Counter(df_winners_rep).most_common(5))
-            print(df_winners_rep)
-            print(df_winners_rept)
+            #print(df_winners_rep)
+            #print(df_winners_rept)
+
+            #pegar dados da coluna - coluna de Arrecadação
+            df_arrec_rep = df['Arrecadação']
+            df_arrec_rep = df_arrec_rep.to_string(index=False)
+            df_arrec_rep = df_arrec_rep.replace('.', '')
+            df_arrec_rep = df_arrec_rep.replace(',00', '.00')
+            df_arrec_rep = df_arrec_rep.replace(' ', '')
+            df_arrec_rep = df_arrec_rep.split('\n')
+            df_arrec_rept = []
+            for i in df_arrec_rep:
+                df_arrec_rept.append(float(i))
+            
+            df_arrec_rept = sorted(df_arrec_rept, reverse=True)[:5]
+            
+            df_arrec_rept_normat = []
+            locale.setlocale(locale.LC_ALL, '')
+            for i in df_arrec_rept:
+                df_arrec_rept_normat.append(locale.currency(i, grouping=True, symbol=True))
+
+            #df_arrec_rept_normat = df_arrec_rept_normat.replace()
+
+            print(df_arrec_rep)
+            print(df_arrec_rept)
+            print(df_arrec_rept_normat)
 
             #pegar dados da coluna - coluna Acumulou?
             df_win_rep = df['Acumulou?'].value_counts()
             print(df_win_rep)
 
             #numeros
-            def items_num(count):
-                items_num = []
-                for key, value in maxVals2.items():
-                    items_num.append(
-                        ft.Container(
-                            content=ft.Text(('O número ' + key + ' se repetiu ' + str(value) + ' vezes no período')),
-                            alignment=ft.alignment.center,
-                            height=50,
-                            bgcolor=ft.colors.PRIMARY_CONTAINER,
-                        )
-                    )
-                return items_num
-            
-            #acumulou?
-            def items_win(count):
-                items_win = []
-                for win, count in df_win_rep.items():
-                    items_win.append(
-                        ft.Container(
-                            content=ft.Text((str(win) + ' ' + str(count) + ' vezes')),
-                            alignment=ft.alignment.center,
-                            height=140,
-                            bgcolor=ft.colors.PRIMARY_CONTAINER,
-                        )
-                    )
-                return items_win
+            global dttable_insight_num_sort
+
+            dttable_insight_num_sort = DataTable(
+            border_radius=10,
+            border=ft.border.all(2, ft.colors.PRIMARY),
+            data_row_max_height=float("inf"),
+            heading_row_color=ft.colors.SECONDARY_CONTAINER,
+            expand=True,
+            columns=[
+                DataColumn(Text("TOP 5 NÚMEROS MAIS SORTEADOS",color=ft.colors.PRIMARY)),
+            ],
+            rows=[],
+            )
+        
+            for key, value in maxVals2.items():
+                dttable_insight_num_sort.rows.append(
+                    DataRow(
+                        cells=[
+                            DataCell(Text('O número ' + key + ' se repetiu ' + str(value) + ' vezes no período')),
+                        ],
+                    ),
+                )
             
             #ganhadores por uf
-            def items_uf(count):
-                items_uf = []
-                for uf, count in df_betwin_rept.items():
-                    items_uf.append(
-                        ft.Container(
-                            content=ft.Text((uf + ' teve ganhadores ' + str(count) + ' vezes')),
-                            alignment=ft.alignment.center,
-                            height=50,
-                            bgcolor=ft.colors.PRIMARY_CONTAINER,
-                        )
-                    )
-                return items_uf
-            
+            global dttable_insight_win_bet
+
+            dttable_insight_win_bet = DataTable(
+            border_radius=10,
+            border=ft.border.all(2, ft.colors.PRIMARY),
+            data_row_max_height=float("inf"),
+            heading_row_color=ft.colors.SECONDARY_CONTAINER,
+            expand=True,
+            columns=[
+                DataColumn(Text("TOP 5 GANHADORES POR UF",color=ft.colors.PRIMARY)),
+            ],
+            rows=[],
+            )
+        
+            for uf, count in df_betwin_rept.items():
+                dttable_insight_win_bet.rows.append(
+                    DataRow(
+                        cells=[
+                            DataCell(Text(uf + ' teve ganhadores ' + str(count) + ' vezes')),
+                        ],
+                    ),
+                )
+
+            #maiores arrecadações
+            global dttable_insight_arrec
+
+            dttable_insight_arrec = DataTable(
+            border_radius=10,
+            border=ft.border.all(2, ft.colors.PRIMARY),
+            data_row_max_height=float("inf"),
+            heading_row_color=ft.colors.SECONDARY_CONTAINER,
+            expand=True,
+            columns=[
+                DataColumn(Text("TOP 5 MAIORES ARRECADAÇÕES",color=ft.colors.PRIMARY)),
+            ],
+            rows=[],
+            )
+        
+            for arrec in df_arrec_rept_normat:
+                dttable_insight_arrec.rows.append(
+                    DataRow(
+                        cells=[
+                            DataCell(Text(arrec)),
+                        ],
+                    ),
+                )    
+
             #Qtd de números acertados
-            def items_winners(count):
-                items_winners = []
-                for winner, count in df_winners_rept.items():
-                    items_winners.append(
-                        ft.Container(
-                            content=ft.Text((winner + ' ocorreram ' + str(count) + ' vezes')),
-                            alignment=ft.alignment.center,
-                            height=50,
-                            bgcolor=ft.colors.PRIMARY_CONTAINER,
-                        )
-                    )
-                return items_winners
+            global dttable_insight_qtd_acert
+
+            dttable_insight_qtd_acert = DataTable(
+            border_radius=10,
+            border=ft.border.all(2, ft.colors.PRIMARY),
+            data_row_max_height=float("inf"),
+            heading_row_color=ft.colors.SECONDARY_CONTAINER,
+            expand=True,
+            columns=[
+                DataColumn(Text("QUANTIDADE DE ACERTOS",color=ft.colors.PRIMARY)),
+            ],
+            rows=[],
+            )
+        
+            for winner, count in df_winners_rept.items():
+                dttable_insight_qtd_acert.rows.append(
+                    DataRow(
+                        cells=[
+                            DataCell(Text(winner + ' ocorreram ' + str(count) + ' vezes')),
+                        ],
+                    ),
+                )
+
+            #acumulou?
+            global dttable_insight_have_winner
+
+            dttable_insight_have_winner = DataTable(
+            border_radius=10,
+            border=ft.border.all(2, ft.colors.PRIMARY),
+            data_row_max_height=float("inf"),
+            heading_row_color=ft.colors.SECONDARY_CONTAINER,
+            expand=True,
+            columns=[
+                DataColumn(Text("VEZES EM QUE HOUVE UM GANHADOR",color=ft.colors.PRIMARY)),
+            ],
+            rows=[],
+            )
+        
+            for win, count in df_win_rep.items():
+                dttable_insight_have_winner.rows.append(
+                    DataRow(
+                        cells=[
+                            DataCell(Text(str(win) + ' ' + str(count) + ' vezes')),
+                        ],
+                    ),
+                )    
 
             def column_with_alignment(align: ft.MainAxisAlignment):
                 return ft.Column(
@@ -1558,7 +1657,7 @@ def main(page: ft.Page):
                             height=50,
                             controls = [
                                 ft.Container(
-                                ft.Text(str('TOP 5 NÚMEROS MAIS SORTEADOS'), size=15),
+                                ft.Text(str('INSIGHTS'), size=15),
                                 alignment=ft.alignment.center,
                                 height=100,
                                 bgcolor=ft.colors.PRIMARY_CONTAINER,
@@ -1567,14 +1666,6 @@ def main(page: ft.Page):
 
                                 #linha divisória vertical    
                                 ft.VerticalDivider(width=4, thickness=3, color=ft.colors.with_opacity(0.05, ft.colors.PRIMARY)),
-
-                                ft.Container(
-                                ft.Text(str('TOP 5 GANHADORES POR UF'), size=15),
-                                alignment=ft.alignment.center,
-                                height=100,
-                                bgcolor=ft.colors.PRIMARY_CONTAINER,
-                                expand=True,
-                                ),
                             ],
                             ),
                             #resultados dos insights
@@ -1583,66 +1674,48 @@ def main(page: ft.Page):
                             alignment=ft.alignment.center,
                             #height=50,
                             controls = [
-                                ft.Container(
-                                    content=ft.Column(items_num(5), alignment=align),
-                                    bgcolor=ft.colors.SECONDARY,
-                                    expand=True,
-                                ),
+                                dttable_insight_num_sort,
 
                                 #linha divisória vertical
                                 ft.VerticalDivider(width=5, thickness=3),
 
-                                ft.Container(
-                                    content=ft.Column(items_uf(5), alignment=align),
-                                    bgcolor=ft.colors.SECONDARY,
-                                    expand=True,
-                                ),
+                                dttable_insight_win_bet,
                             ],
                             ),
                             ft.Row(
                             spacing=0,
                             alignment=ft.alignment.center,
-                            height=50,
-                            controls = [
-                                ft.Container(
-                                ft.Text(str('VEZES EM QUE HOUVERAM GANHADORES'), size=15),
-                                alignment=ft.alignment.center,
-                                height=100,
-                                bgcolor=ft.colors.PRIMARY_CONTAINER,
-                                expand=True,
-                                ),
-
-                                #linha divisória vertical    
-                                ft.VerticalDivider(width=4, thickness=3, color=ft.colors.with_opacity(0.05, ft.colors.PRIMARY)),
-
-                                ft.Container(
-                                ft.Text(str('QUANTIDADE DE ACERTOS'), size=15),
-                                alignment=ft.alignment.center,
-                                height=100,
-                                bgcolor=ft.colors.PRIMARY_CONTAINER,
-                                expand=True,
-                                ),
-                            ],
+                            height=10,
+                            controls = [],
                             ),
                             ft.Row(
                             spacing=0,
                             alignment=ft.alignment.center,
                             #height=50,
                             controls = [
-                                ft.Container(
-                                    content=ft.Column(items_win(5), alignment=align),
-                                    bgcolor=ft.colors.SECONDARY,
-                                    expand=True,
-                                ),
+                                dttable_insight_arrec,
 
                                 #linha divisória vertical
                                 ft.VerticalDivider(width=5, thickness=3),
 
-                                ft.Container(
-                                    content=ft.Column(items_winners(5), alignment=align),
-                                    bgcolor=ft.colors.SECONDARY,
-                                    expand=True,
-                                ),
+                                dttable_insight_qtd_acert,
+                            ],
+                            ),
+                            ft.Row(
+                            spacing=0,
+                            alignment=ft.alignment.center,
+                            height=10,
+                            controls = [],
+                            ),
+                            ft.Row(
+                            spacing=0,
+                            alignment=ft.alignment.center,
+                            #height=50,
+                            controls = [
+                                dttable_insight_have_winner,
+
+                                #linha divisória vertical
+                                ft.VerticalDivider(width=5, thickness=3),
                             ],
                             ),
                         ],
@@ -1661,7 +1734,7 @@ def main(page: ft.Page):
                     ],
                     spacing=10,
                     alignment=ft.MainAxisAlignment.START,
-                )
+                ),
             )    
 
 
